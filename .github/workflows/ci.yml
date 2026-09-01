@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: make install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build application
+        run: make build
+
+      - name: Start preview server
+        run: |
+          npm run preview -- --host 0.0.0.0 &
+          echo "APP_URL=http://localhost:4173" >> $GITHUB_ENV
+
+      - name: Run tests
+        run: make test
