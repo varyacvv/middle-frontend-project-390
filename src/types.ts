@@ -26,3 +26,31 @@ export interface Flight {
   price: Money;
   seatsAvailable: number;
 }
+
+export interface Passenger {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  documentNumber: string;
+}
+
+export interface Contact {
+  email: string;
+  phone: string;
+}
+
+export interface Booking {
+  code: string;
+  status: 'confirmed' | 'cancelled';
+  flight: Flight;
+  passengers: Passenger[];
+  contact: Contact;
+  totalPrice: Money;
+  createdAt: string;
+}
+
+export interface CreateBookingRequest {
+  flightId: string;
+  contact: Contact;
+  passengers: Passenger[];
+}
