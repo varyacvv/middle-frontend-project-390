@@ -24,23 +24,18 @@ jobs:
       - name: Build application
         run: make build
 
-      - name: Start mock server
+      - name: Start server (static + API)
         run: |
-          npx @stoplight/prism-cli mock contract/openapi.yaml --port 4010 &
-          echo "MOCK_PID=$!" >> $GITHUB_ENV
+          make start &
+          echo "SERVER_PID=$!" >> $GITHUB_ENV
 
-      - name: Start dev server
-        run: |
-          npm run dev -- --host 0.0.0.0 &
-          echo "DEV_PID=$!" >> $GITHUB_ENV
-
-      - name: Wait for servers
+      - name: Wait for server
         run: |
           sleep 5
-          curl -s http://localhost:4010/api/cities > /dev/null
-          curl -s http://localhost:5173 > /dev/null
+          curl -s http://localhost:8080/ > /dev/null
+          curl -s http://localhost:8080/api/cities > /dev/null
 
       - name: Run tests
         env:
-          APP_URL: http://localhost:5173
+          APP_URL: http://localhost:8080
         run: make test
