@@ -202,6 +202,13 @@ function SearchPage() {
                     ))}
                 </div>
             )}
+            <button
+                type="button"
+                className="btn btn-danger"
+                onClick={() => { throw new Error('Test error for Bugsink') }}
+            >
+                Вызвать ошибку
+            </button>
         </main>
     );
 }
