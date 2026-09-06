@@ -74,7 +74,7 @@ function SearchPage() {
     return (
         <main className="container py-4">
             <nav className="mb-3">
-                <a href="/viewbooking" data-testid="nav-lookup" className="btn btn-outline-secondary">
+                <a href="/lookup" data-testid="nav-lookup" className="btn btn-outline-secondary">
                     Мои брони
                 </a>
             </nav>

@@ -71,7 +71,7 @@ test('просмотр и отмена брони', async ({ page }) => {
     });
   });
 
-  await page.goto('/viewbooking');
+  await page.goto('/lookup');
 
   await page.getByTestId('lookup-code').fill('ABC123');
   await page.getByTestId('lookup-lastName').fill('Петров');
@@ -96,7 +96,7 @@ test('бронь не найдена', async ({ page }) => {
     });
   });
 
-  await page.goto('/viewbooking');
+  await page.goto('/lookup');
   await page.getByTestId('lookup-code').fill('UNKNOWN');
   await page.getByTestId('lookup-lastName').fill('Петров');
   await page.getByTestId('lookup-submit').click();

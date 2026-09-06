@@ -10,7 +10,7 @@ function App() {
     return <BookingPage flightId={flightId} />;
   }
 
-  if (path === '/viewbooking') {
+  if (path === '/lookup') {
     return <ViewBooking />;
   }
 
