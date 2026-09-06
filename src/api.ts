@@ -52,3 +52,29 @@ export async function createBooking(data: CreateBookingRequest): Promise<Booking
   }
   return response.json();
 }
+
+export async function fetchBooking(code: string, lastName: string): Promise<Booking> {
+  const url = `/api/bookings/${code}?lastName=${encodeURIComponent(lastName)}`;
+  const response = await fetch(url);
+  if (response.status === 404) {
+    throw new Error('not_found');
+  }
+  if (!response.ok) {
+    throw new Error('Ошибка загрузки брони');
+  }
+  return response.json();
+}
+
+export async function cancelBooking(code: string, lastName: string): Promise<Booking> {
+  const response = await fetch(`/api/bookings/${code}/cancel`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ lastName }),
+  });
+  if (!response.ok) {
+    throw new Error('Ошибка отмены брони');
+  }
+  return response.json();
+}

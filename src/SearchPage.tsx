@@ -73,6 +73,11 @@ function SearchPage() {
 
     return (
         <main className="container py-4">
+            <nav className="mb-3">
+                <a href="/viewbooking" data-testid="nav-lookup" className="btn btn-outline-secondary">
+                    Мои брони
+                </a>
+            </nav>
             <h1>Поиск рейсов</h1>
 
             <form data-testid="flight-search-form" onSubmit={handleSubmit} className="mb-4">
