@@ -1,11 +1,9 @@
-import type { City, Flight, CreateBookingRequest, Booking } from './types';
+import apiClient from "./apiClient";
+import type { City, Flight, CreateBookingRequest, Booking } from "./types";
 
 export async function fetchCities(): Promise<City[]> {
-  const response = await fetch('/api/cities');
-  if (!response.ok) {
-    throw new Error('Не удалось загрузить города');
-  }
-  return response.json();
+  const response = await apiClient.get<City[]>("/cities");
+  return response.data;
 }
 
 export async function searchFlights(params: {
@@ -14,67 +12,55 @@ export async function searchFlights(params: {
   date: string;
   passengers: number;
 }): Promise<Flight[]> {
-  const searchParams = new URLSearchParams({
-    origin: params.origin,
-    destination: params.destination,
-    date: params.date,
-    passengers: String(params.passengers),
+  const response = await apiClient.get<Flight[]>("/flights", {
+    params: {
+      origin: params.origin,
+      destination: params.destination,
+      date: params.date,
+      passengers: params.passengers,
+    },
   });
-
-  const response = await fetch(`/api/flights?${searchParams.toString()}`);
-  if (!response.ok) {
-    throw new Error('Не удалось выполнить поиск рейсов');
-  }
-  return response.json();
+  return response.data;
 }
 
 export async function fetchFlightById(id: string): Promise<Flight | null> {
-  const response = await fetch(`/api/flights/${id}`);
-  if (response.status === 404) {
-    return null;
+  try {
+    const response = await apiClient.get<Flight>(`/flights/${id}`);
+    return response.data;
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      (error as { status?: number }).status === 404
+    ) {
+      return null;
+    }
+    throw error;
   }
-  if (!response.ok) {
-    throw new Error('Не удалось загрузить рейс');
-  }
-  return response.json();
 }
 
-export async function createBooking(data: CreateBookingRequest): Promise<Booking> {
-  const response = await fetch('/api/bookings', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
+export async function createBooking(
+  data: CreateBookingRequest,
+): Promise<Booking> {
+  const response = await apiClient.post<Booking>("/bookings", data);
+  return response.data;
+}
+
+export async function fetchBooking(
+  code: string,
+  lastName: string,
+): Promise<Booking> {
+  const response = await apiClient.get<Booking>(`/bookings/${code}`, {
+    params: { lastName },
   });
-  if (!response.ok) {
-    throw new Error('Не удалось создать бронь');
-  }
-  return response.json();
+  return response.data;
 }
 
-export async function fetchBooking(code: string, lastName: string): Promise<Booking> {
-  const url = `/api/bookings/${code}?lastName=${encodeURIComponent(lastName)}`;
-  const response = await fetch(url);
-  if (response.status === 404) {
-    throw new Error('not_found');
-  }
-  if (!response.ok) {
-    throw new Error('Ошибка загрузки брони');
-  }
-  return response.json();
-}
-
-export async function cancelBooking(code: string, lastName: string): Promise<Booking> {
-  const response = await fetch(`/api/bookings/${code}/cancel`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ lastName }),
+export async function cancelBooking(
+  code: string,
+  lastName: string,
+): Promise<Booking> {
+  const response = await apiClient.post<Booking>(`/bookings/${code}/cancel`, {
+    lastName,
   });
-  if (!response.ok) {
-    throw new Error('Ошибка отмены брони');
-  }
-  return response.json();
+  return response.data;
 }

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { fetchBooking, cancelBooking } from './api';
 import type { Booking } from './types';
+import Loading from './components/Loading';
+import ErrorMessage from './components/ErrorMessage';
 
 function ViewBooking() {
   const [code, setCode] = useState('');
@@ -21,7 +23,8 @@ function ViewBooking() {
       const data = await fetchBooking(code.trim(), lastName.trim());
       setBooking(data);
     } catch (err) {
-      if (err instanceof Error && err.message === 'not_found') {
+      const errorStatus = (err as { status?: number }).status;
+      if (errorStatus === 404) {
         setError('Бронь не найдена');
       } else {
         setError(err instanceof Error ? err.message : 'Ошибка загрузки брони');
@@ -81,13 +84,9 @@ function ViewBooking() {
         </div>
       </form>
 
-      {loading && <div className="text-muted">Загрузка...</div>}
+      {loading && <Loading text="Загрузка..." />}
 
-      {error && (
-        <div data-testid="booking-not-found" className="alert alert-danger">
-          {error}
-        </div>
-      )}
+      {error && <ErrorMessage message={error} testId="booking-not-found" />}
 
       {booking && (
         <div data-testid="booking-details" className="border p-4 rounded">

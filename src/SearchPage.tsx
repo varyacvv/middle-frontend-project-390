@@ -1,9 +1,10 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { fetchCities, searchFlights } from './api';
 import type { City, Flight } from './types';
+import Loading from './components/Loading';
+import ErrorMessage from './components/ErrorMessage';
 
 function SearchPage() {
-    // Состояния поиска
     const [cities, setCities] = useState<City[]>([]);
     const [origin, setOrigin] = useState<string>('');
     const [destination, setDestination] = useState<string>('');
@@ -41,7 +42,6 @@ function SearchPage() {
         []
     );
 
-    // Загрузка городов при монтировании
     useEffect(() => {
         const loadCities = async () => {
             try {
@@ -58,7 +58,6 @@ function SearchPage() {
         loadCities();
     }, []);
 
-    // Автоматический поиск после установки городов
     useEffect(() => {
         if (origin && destination && !autoSearchTriggered.current) {
             autoSearchTriggered.current = true;
@@ -155,17 +154,9 @@ function SearchPage() {
                 </div>
             </form>
 
-            {loading && (
-                <div className="text-muted" data-testid="flights-loading">
-                    Загрузка рейсов...
-                </div>
-            )}
+            {loading && <Loading text="Загрузка рейсов..." testId="flights-loading" />}
 
-            {error && (
-                <div className="alert alert-danger" data-testid="flights-error">
-                    {error}
-                </div>
-            )}
+            {error && <ErrorMessage message={error} testId="flights-error" />}
 
             {!loading && !error && flights.length === 0 && (
                 <div data-testid="flights-empty">
